@@ -1,10 +1,9 @@
 @import 'tailwindcss';
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 @theme {
     --font-sans: 'Outfit', system-ui, sans-serif;
-
+    
     --color-gymly-green-50: #f0fdf4;
     --color-gymly-green-100: #dcfce7;
     --color-gymly-green-500: #22c55e;

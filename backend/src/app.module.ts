@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { PackagesModule } from './packages/packages.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { CheckInsModule } from './checkins/checkins.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import { JwtAuthGuard, RolesGuard } from './auth/guards';
 import { PrismaExceptionFilter } from './common/filters';
 
@@ -20,6 +21,7 @@ import { PrismaExceptionFilter } from './common/filters';
         PackagesModule,
         SubscriptionsModule,
         CheckInsModule,
+        NotificationsModule,
     ],
     providers: [
         {

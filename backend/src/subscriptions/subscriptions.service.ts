@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import {
     SubscribeDto,
     SubscribeResponseDto,
@@ -16,7 +17,10 @@ import {
 
 @Injectable()
 export class SubscriptionsService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly notificationsService: NotificationsService,
+    ) {}
 
     async subscribe(memberId: number, dto: SubscribeDto, receiptUrl?: string): Promise<SubscribeResponseDto> {
         const pkg = await this.prisma.package.findUnique({
@@ -30,6 +34,11 @@ export class SubscriptionsService {
         if (!pkg.isActive) {
             throw new ForbiddenException('Package is not active');
         }
+
+        const member = await this.prisma.member.findUnique({
+            where: { id: memberId },
+            select: { name: true },
+        });
 
         const result = await this.prisma.$transaction(async (tx) => {
             const order = await tx.order.create({
@@ -53,6 +62,19 @@ export class SubscriptionsService {
 
             return { order, subscription };
         });
+
+        // Notify admins about new subscription request
+        await this.notificationsService.sendNotificationToAdmins(
+            'subscription_request',
+            'New Subscription Request',
+            `${member?.name || 'A member'} has requested ${pkg.name} package`,
+            {
+                subscriptionId: result.subscription.id,
+                orderId: result.order.id,
+                memberId,
+                packageName: pkg.name,
+            },
+        );
 
         return result;
     }
@@ -141,7 +163,14 @@ export class SubscriptionsService {
     async approve(subscriptionId: number): Promise<ApproveSubscriptionResponseDto> {
         const subscription = await this.prisma.subscription.findUnique({
             where: { id: subscriptionId },
-            include: { order: true },
+            include: {
+                order: true,
+                member: {
+                    include: {
+                        user: { select: { id: true } },
+                    },
+                },
+            },
         });
 
         if (!subscription) {
@@ -173,6 +202,22 @@ export class SubscriptionsService {
             }),
         ]);
 
+        // Notify member about approval
+        if (subscription.member?.user?.id) {
+            await this.notificationsService.sendNotification({
+                userId: subscription.member.user.id,
+                type: 'subscription_approved',
+                title: 'Subscription Approved! 🎉',
+                body: `Your ${subscription.order.packageName} subscription has been approved. Valid until ${endDate.toLocaleDateString()}.`,
+                data: {
+                    subscriptionId: updatedSubscription.id,
+                    orderId: updatedOrder.id,
+                    packageName: subscription.order.packageName,
+                    endDate: endDate.toISOString(),
+                },
+            });
+        }
+
         return {
             subscriptionId: updatedSubscription.id,
             orderId: updatedOrder.id,
@@ -186,7 +231,14 @@ export class SubscriptionsService {
     async deny(subscriptionId: number, dto: DenySubscriptionDto): Promise<DenySubscriptionResponseDto> {
         const subscription = await this.prisma.subscription.findUnique({
             where: { id: subscriptionId },
-            include: { order: true },
+            include: {
+                order: true,
+                member: {
+                    include: {
+                        user: { select: { id: true } },
+                    },
+                },
+            },
         });
 
         if (!subscription) {
@@ -210,6 +262,22 @@ export class SubscriptionsService {
                 reason: dto.reason || null,
             },
         });
+
+        if (subscription.member?.user?.id) {
+            const reasonText = dto.reason ? ` Reason: ${dto.reason}` : '';
+            await this.notificationsService.sendNotification({
+                userId: subscription.member.user.id,
+                type: 'subscription_rejected',
+                title: 'Subscription Rejected',
+                body: `Your ${subscription.order.packageName} subscription request has been rejected.${reasonText}`,
+                data: {
+                    subscriptionId: subscription.id,
+                    orderId: updatedOrder.id,
+                    packageName: subscription.order.packageName,
+                    reason: dto.reason,
+                },
+            });
+        }
 
         return {
             subscriptionId: subscription.id,
