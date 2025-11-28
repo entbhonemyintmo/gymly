@@ -111,12 +111,10 @@ export function SubscribeModal({ pkg, isOpen, onClose }: SubscribeModalProps) {
         const amount = parseInt(paidAmount, 10);
         if (isNaN(amount) || amount <= 0) return;
 
-        // TODO: When backend supports file upload, send receiptFile here
-        // For now, we just submit without the receipt file
         mutate({
             packageId: pkg.id,
             paidAmount: amount,
-            // receiptFile will be handled when backend is updated
+            receipt: receiptFile || undefined,
         });
     };
 
@@ -290,7 +288,7 @@ export function SubscribeModal({ pkg, isOpen, onClose }: SubscribeModalProps) {
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept="image/*,.pdf"
+                                accept="image/jpeg,image/png,image/webp"
                                 onChange={handleFileChange}
                                 className="hidden"
                                 id="receiptFile"
@@ -345,7 +343,7 @@ export function SubscribeModal({ pkg, isOpen, onClose }: SubscribeModalProps) {
                                     </div>
                                     <div className="text-center">
                                         <p className="text-sm font-medium text-gray-700">Click to upload receipt</p>
-                                        <p className="text-xs text-gray-400 mt-0.5">PNG, JPG or PDF up to 10MB</p>
+                                        <p className="text-xs text-gray-400 mt-0.5">PNG, JPG or WebP up to 5MB</p>
                                     </div>
                                 </button>
                             )}

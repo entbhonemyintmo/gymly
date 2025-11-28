@@ -3,7 +3,7 @@ import { api } from '../lib/api';
 export interface SubscribeRequest {
     packageId: number;
     paidAmount: number;
-    receiptUrl?: string;
+    receipt?: File;
 }
 
 export type OrderStatus = 'pending' | 'approved' | 'rejected';
@@ -111,7 +111,15 @@ export interface DenySubscriptionResponse {
 }
 
 export async function subscribe(data: SubscribeRequest): Promise<SubscribeResponse> {
-    return api.post('subscriptions/subscribe', { json: data }).json();
+    const formData = new FormData();
+    formData.append('packageId', data.packageId.toString());
+    formData.append('paidAmount', data.paidAmount.toString());
+
+    if (data.receipt) {
+        formData.append('receipt', data.receipt);
+    }
+
+    return api.post('subscriptions/subscribe', { body: formData }).json();
 }
 
 export async function getMySubscriptions(query?: MySubscriptionsQuery): Promise<PaginatedMySubscriptions> {
