@@ -4,6 +4,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { PackagesModule } from './packages/packages.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { JwtAuthGuard, RolesGuard } from './auth/guards';
 import { PrismaExceptionFilter } from './common/filters';
 
@@ -16,6 +17,7 @@ import { PrismaExceptionFilter } from './common/filters';
         PrismaModule,
         AuthModule,
         PackagesModule,
+        SubscriptionsModule,
     ],
     providers: [
         {

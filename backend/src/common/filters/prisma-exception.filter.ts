@@ -6,7 +6,6 @@ interface PrismaErrorResponse {
     statusCode: number;
     error: string;
     message: string;
-    details?: string;
 }
 
 @Catch(PrismaClientKnownRequestError)
@@ -41,7 +40,6 @@ export class PrismaExceptionFilter implements ExceptionFilter<PrismaClientKnownR
                     statusCode: HttpStatus.CONFLICT,
                     error: 'Conflict',
                     message: this.getUniqueConstraintMessage(exception),
-                    details: error,
                 };
 
             case 'P2003':
@@ -51,7 +49,6 @@ export class PrismaExceptionFilter implements ExceptionFilter<PrismaClientKnownR
                     message: isCreateOrUpdateOperation
                         ? 'Invalid reference: The related record does not exist'
                         : 'Cannot perform operation: Record is referenced by other records',
-                    details: error,
                 };
 
             case 'P2025':
@@ -61,7 +58,6 @@ export class PrismaExceptionFilter implements ExceptionFilter<PrismaClientKnownR
                     message: isDeleteOrUpdate
                         ? 'Record not found with the provided ID'
                         : 'The requested record was not found',
-                    details: error,
                 };
 
             case 'P2014':
@@ -69,7 +65,6 @@ export class PrismaExceptionFilter implements ExceptionFilter<PrismaClientKnownR
                     statusCode: HttpStatus.BAD_REQUEST,
                     error: 'Bad Request',
                     message: 'The operation violates a required relation',
-                    details: error,
                 };
 
             case 'P2016':
@@ -77,7 +72,6 @@ export class PrismaExceptionFilter implements ExceptionFilter<PrismaClientKnownR
                     statusCode: HttpStatus.BAD_REQUEST,
                     error: 'Bad Request',
                     message: 'Invalid query parameters',
-                    details: error,
                 };
 
             default:
@@ -85,7 +79,6 @@ export class PrismaExceptionFilter implements ExceptionFilter<PrismaClientKnownR
                     statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                     error: 'Internal Server Error',
                     message: 'An unexpected database error occurred',
-                    details: error,
                 };
         }
     }
