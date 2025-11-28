@@ -1,5 +1,12 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app';
-import { getMessaging, getToken, deleteToken, type Messaging } from 'firebase/messaging';
+import {
+    getMessaging,
+    getToken,
+    deleteToken,
+    onMessage,
+    type Messaging,
+    type MessagePayload,
+} from 'firebase/messaging';
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -126,4 +133,18 @@ export async function deleteFcmToken(): Promise<boolean> {
 
 export function isNotificationSupported(): boolean {
     return 'Notification' in window && 'serviceWorker' in navigator && isFirebaseConfigured();
+}
+
+export type MessageCallback = (payload: MessagePayload) => void;
+
+export function onForegroundMessage(callback: MessageCallback): (() => void) | null {
+    const fcmMessaging = getFirebaseMessaging();
+    if (!fcmMessaging) return null;
+
+    const unsubscribe = onMessage(fcmMessaging, (payload) => {
+        console.log('Foreground message received:', payload);
+        callback(payload);
+    });
+
+    return unsubscribe;
 }

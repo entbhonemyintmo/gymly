@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { type AuthUser, type LoginCredentials, login as apiLogin, getMe } from '../api/auth';
 import { registerFcmToken, removeFcmToken } from '../api/notifications';
-import { getFcmToken, deleteFcmToken, isNotificationSupported } from '../lib/firebase';
+import { getFcmToken, deleteFcmToken, isNotificationSupported, onForegroundMessage } from '../lib/firebase';
 
 interface AuthContextType {
     user: AuthUser | null;
@@ -22,6 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
     const [isLoading, setIsLoading] = useState(true);
+    const queryClient = useQueryClient();
 
     const logout = useCallback(async () => {
         const storedFcmToken = localStorage.getItem(FCM_TOKEN_KEY);
@@ -88,6 +90,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         loadUser();
     }, [token, logout, registerPushNotifications]);
+
+    useEffect(() => {
+        if (!user) return;
+
+        const unsubscribe = onForegroundMessage(() => {
+            queryClient.invalidateQueries({ queryKey: ['notifications'] });
+            queryClient.invalidateQueries({ queryKey: ['notificationsDropdown'] });
+            queryClient.invalidateQueries({ queryKey: ['notificationsUnreadCount'] });
+        });
+
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
+    }, [user, queryClient]);
 
     const login = useCallback(
         async (credentials: LoginCredentials) => {
