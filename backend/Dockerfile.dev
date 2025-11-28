@@ -11,7 +11,8 @@ RUN npm ci
 COPY prisma ./prisma/
 COPY prisma.config.ts ./
 
-RUN npm run prisma:generate
+# Dummy URL for prisma generate (doesn't connect, just generates client)
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npm run prisma:generate
 
 COPY . .
 
