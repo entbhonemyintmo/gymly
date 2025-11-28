@@ -2,14 +2,13 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useMemo } from 'react';
 import { Menu, Dumbbell } from 'lucide-react';
 import AdminSidebar from '../components/admin-sidebar';
+import { NotificationDropdown } from '../components/notification-dropdown';
 import { getAdminNavItemByPath } from '../lib/admin-navigation';
 import { AdminSidebarProvider, useAdminSidebar } from '../context/AdminSidebarContext';
-import { useAuth } from '../context/AuthContext';
 
 function AdminLayoutContent() {
     const location = useLocation();
     const { isCollapsed, setIsMobileOpen } = useAdminSidebar();
-    const { user } = useAuth();
 
     const currentPage = useMemo(() => {
         return getAdminNavItemByPath(location.pathname);
@@ -64,21 +63,9 @@ function AdminLayoutContent() {
                             </div>
 
                             {/* User info - right side */}
-                            {user && (
-                                <div className="ml-auto flex items-center gap-3">
-                                    <div className="hidden sm:block text-right">
-                                        <p className="text-sm font-medium text-white truncate max-w-[180px]">
-                                            {user.email}
-                                        </p>
-                                        <p className="text-xs text-gymly-green-500 capitalize">{user.role}</p>
-                                    </div>
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 ring-2 ring-slate-700/50">
-                                        <span className="text-sm font-semibold text-white">
-                                            {user.email.charAt(0).toUpperCase()}
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
+                            <div className="ml-auto flex items-center gap-3">
+                                <NotificationDropdown variant="admin" notificationsPageLink="/admin/notifications" />
+                            </div>
                         </div>
 
                         {/* Page title - mobile */}

@@ -93,6 +93,7 @@ function AppRoutes() {
                         </ProtectedRoute>
                     }
                 />
+                <Route path="notifications" element={<NotificationsPage variant="admin" />} />
             </Route>
         </Routes>
     );

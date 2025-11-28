@@ -39,7 +39,6 @@ export class NotificationsController {
         @CurrentUser() user: AuthUserDto,
         @Query() query: NotificationsQueryDto,
     ): Promise<PaginatedNotificationsDto> {
-        console.log('debug: user', user);
         return this.notificationsService.getNotifications(user.userId, query);
     }
 

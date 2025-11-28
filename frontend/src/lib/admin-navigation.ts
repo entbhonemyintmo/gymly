@@ -1,4 +1,4 @@
-import { LayoutDashboard, CalendarCheck, CreditCard, type LucideIcon } from 'lucide-react';
+import { LayoutDashboard, CalendarCheck, CreditCard, Bell, type LucideIcon } from 'lucide-react';
 
 export interface AdminNavItem {
     href: string;
@@ -29,6 +29,13 @@ export const adminNavigationItems: AdminNavItem[] = [
         description: 'Manage member subscriptions',
         icon: CreditCard,
         roles: ['admin'],
+    },
+    {
+        href: '/admin/notifications',
+        title: 'Notifications',
+        description: 'View all notifications',
+        icon: Bell,
+        roles: ['admin', 'staff'],
     },
 ];
 
