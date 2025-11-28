@@ -1,5 +1,22 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from '../../../generated/prisma/client';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { UserRole, MemberStatus } from '../../../generated/prisma/client';
+
+export class MemberInfoDto {
+    @ApiProperty({ example: 1, description: 'Member ID' })
+    id: number;
+
+    @ApiProperty({ example: 'John Doe', description: 'Member name' })
+    name: string;
+
+    @ApiProperty({ example: '+1234567890', description: 'Phone number' })
+    phoneNumber: string;
+
+    @ApiProperty({ enum: ['approved', 'pending', 'rejected'], description: 'Member status' })
+    status: MemberStatus;
+
+    @ApiProperty({ description: 'Member creation date' })
+    createdAt: Date;
+}
 
 export class AuthUserDto {
     @ApiProperty({ example: 1, description: 'User ID' })
@@ -13,6 +30,9 @@ export class AuthUserDto {
 
     @ApiProperty({ example: 1, description: 'Member ID if user is a member', nullable: true })
     memberId: number | null;
+
+    @ApiPropertyOptional({ type: MemberInfoDto, description: 'Member details if user is a member' })
+    member?: MemberInfoDto;
 }
 
 export class LoginResponseDto {

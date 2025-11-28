@@ -64,4 +64,31 @@ export class AuthService {
             memberId: user.memberId,
         };
     }
+
+    async getUserWithMember(userId: number): Promise<AuthUserDto | null> {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            include: { member: true },
+        });
+
+        if (!user) {
+            return null;
+        }
+
+        return {
+            userId: user.id,
+            email: user.email,
+            role: user.role,
+            memberId: user.memberId,
+            member: user.member
+                ? {
+                      id: user.member.id,
+                      name: user.member.name,
+                      phoneNumber: user.member.phoneNumber,
+                      status: user.member.status,
+                      createdAt: user.member.createdAt,
+                  }
+                : undefined,
+        };
+    }
 }

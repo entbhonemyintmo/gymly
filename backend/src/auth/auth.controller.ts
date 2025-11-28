@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Body, HttpCode, HttpStatus, Get } from '@nestjs/common';
+import { Controller, Post, UseGuards, Body, HttpCode, HttpStatus, Get, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards';
@@ -29,14 +29,18 @@ export class AuthController {
 
     @Get('me')
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get current authenticated user' })
+    @ApiOperation({ summary: 'Get current authenticated user with member info' })
     @ApiResponse({
         status: 200,
-        description: 'Current user details',
+        description: 'Current user details including member info',
         type: AuthUserDto,
     })
     @ApiResponse({ status: 401, description: 'Unauthorized' })
     async getMe(@CurrentUser() user: AuthUserDto): Promise<AuthUserDto> {
-        return user;
+        const userWithMember = await this.authService.getUserWithMember(user.userId);
+        if (!userWithMember) {
+            throw new NotFoundException('User not found');
+        }
+        return userWithMember;
     }
 }
