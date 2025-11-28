@@ -18,7 +18,7 @@ import {
 export class SubscriptionsService {
     constructor(private readonly prisma: PrismaService) {}
 
-    async subscribe(memberId: number, dto: SubscribeDto): Promise<SubscribeResponseDto> {
+    async subscribe(memberId: number, dto: SubscribeDto, receiptUrl?: string): Promise<SubscribeResponseDto> {
         const pkg = await this.prisma.package.findUnique({
             where: { id: dto.packageId },
         });
@@ -39,7 +39,7 @@ export class SubscriptionsService {
                     packagePrice: pkg.price,
                     packageDurationDays: pkg.durationDays,
                     paidAmount: dto.paidAmount,
-                    receiptUrl: dto.receiptUrl || null,
+                    receiptUrl: receiptUrl || null,
                     orderStatus: 'pending',
                 },
             });

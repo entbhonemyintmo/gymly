@@ -1,5 +1,29 @@
-import { Controller, Post, Get, Body, Query, Param, ParseIntPipe, ForbiddenException } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiParam } from '@nestjs/swagger';
+import {
+    Controller,
+    Post,
+    Get,
+    Body,
+    Query,
+    Param,
+    ParseIntPipe,
+    ForbiddenException,
+    UseInterceptors,
+    UploadedFile,
+    ParseFilePipe,
+    MaxFileSizeValidator,
+    FileTypeValidator,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+    ApiTags,
+    ApiOperation,
+    ApiResponse,
+    ApiBearerAuth,
+    ApiQuery,
+    ApiParam,
+    ApiConsumes,
+    ApiBody,
+} from '@nestjs/swagger';
 import { SubscriptionsService } from './subscriptions.service';
 import {
     SubscribeDto,
@@ -16,11 +40,16 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { AuthUserDto } from '../auth/dto';
 import { UserRole } from '../../generated/prisma/client';
+import { UploadService } from '../upload';
+import 'multer';
 
 @ApiTags('Subscriptions')
 @Controller('subscriptions')
 export class SubscriptionsController {
-    constructor(private readonly subscriptionsService: SubscriptionsService) {}
+    constructor(
+        private readonly subscriptionsService: SubscriptionsService,
+        private readonly uploadService: UploadService,
+    ) {}
 
     @Get()
     @Roles(UserRole.admin)
@@ -78,7 +107,24 @@ export class SubscriptionsController {
     @Post('subscribe')
     @Roles(UserRole.member)
     @ApiBearerAuth()
+    @UseInterceptors(FileInterceptor('receipt'))
+    @ApiConsumes('multipart/form-data')
     @ApiOperation({ summary: 'Subscribe to a package (members only)' })
+    @ApiBody({
+        schema: {
+            type: 'object',
+            required: ['packageId', 'paidAmount'],
+            properties: {
+                packageId: { type: 'integer', example: 1, description: 'Package ID to subscribe to' },
+                paidAmount: { type: 'integer', example: 5000, description: 'Amount paid in cents' },
+                receipt: {
+                    type: 'string',
+                    format: 'binary',
+                    description: 'Receipt image (JPEG, PNG, or WebP, max 5MB)',
+                },
+            },
+        },
+    })
     @ApiResponse({
         status: 201,
         description: 'Subscription created successfully',
@@ -88,12 +134,30 @@ export class SubscriptionsController {
     @ApiResponse({ status: 401, description: 'Unauthorized' })
     @ApiResponse({ status: 403, description: 'Forbidden - Not a member or package not active' })
     @ApiResponse({ status: 404, description: 'Package not found' })
-    async subscribe(@CurrentUser() user: AuthUserDto, @Body() dto: SubscribeDto): Promise<SubscribeResponseDto> {
+    async subscribe(
+        @CurrentUser() user: AuthUserDto,
+        @Body() dto: SubscribeDto,
+        @UploadedFile(
+            new ParseFilePipe({
+                validators: [
+                    new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
+                    new FileTypeValidator({ fileType: /^image\/(jpeg|png|webp)$/ }),
+                ],
+                fileIsRequired: false,
+            }),
+        )
+        receipt?: Express.Multer.File,
+    ): Promise<SubscribeResponseDto> {
         if (!user.memberId) {
             throw new ForbiddenException('User is not associated with a member account');
         }
 
-        return this.subscriptionsService.subscribe(user.memberId, dto);
+        let receiptUrl: string | undefined;
+        if (receipt) {
+            receiptUrl = await this.uploadService.uploadFile(receipt, 'receipts');
+        }
+
+        return this.subscriptionsService.subscribe(user.memberId, dto, receiptUrl);
     }
 
     @Post(':id/approve')
