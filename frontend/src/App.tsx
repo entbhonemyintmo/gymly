@@ -9,6 +9,8 @@ import MySubscriptionsPage from './pages/user/MySubscriptionsPage';
 import PackagesPage from './pages/user/PackagesPage';
 import ProfilePage from './pages/user/ProfilePage';
 import AdminHomePage from './pages/admin/HomePage';
+import AdminCheckInsPage from './pages/admin/CheckInsPage';
+import AdminSubscriptionsPage from './pages/admin/SubscriptionsPage';
 import LoginPage from './pages/LoginPage';
 
 const queryClient = new QueryClient();
@@ -80,6 +82,15 @@ function AppRoutes() {
                 }
             >
                 <Route index element={<AdminHomePage />} />
+                <Route path="checkins" element={<AdminCheckInsPage />} />
+                <Route
+                    path="subscriptions"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <AdminSubscriptionsPage />
+                        </ProtectedRoute>
+                    }
+                />
             </Route>
         </Routes>
     );
