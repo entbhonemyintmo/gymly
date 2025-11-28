@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard, RolesGuard } from './auth/guards';
+import { PrismaExceptionFilter } from './common/filters';
 
 @Module({
     imports: [
@@ -15,6 +16,10 @@ import { JwtAuthGuard, RolesGuard } from './auth/guards';
         AuthModule,
     ],
     providers: [
+        {
+            provide: APP_FILTER,
+            useClass: PrismaExceptionFilter,
+        },
         {
             provide: APP_GUARD,
             useClass: JwtAuthGuard,
