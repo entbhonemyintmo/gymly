@@ -30,9 +30,9 @@ async function bootstrap() {
 
     SwaggerModule.setup('docs', app, document);
 
-    await app.listen(process.env.PORT ?? 3000);
+    await app.listen(process.env.PORT ?? 8001);
 
-    logger.verbose(`API is running on port ${process.env.PORT ?? 3000}`);
-    logger.verbose(`API documentation is available at http://localhost:${process.env.PORT ?? 3000}/docs`);
+    logger.verbose(`API is running on port ${process.env.PORT ?? 8001}`);
+    logger.verbose(`API documentation is available at http://localhost:${process.env.PORT ?? 8001}/docs`);
 }
 bootstrap();

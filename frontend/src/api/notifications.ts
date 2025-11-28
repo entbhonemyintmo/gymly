@@ -56,3 +56,24 @@ export async function markAsRead(notificationIds: number[]): Promise<MarkAsReadR
 export async function markAllAsRead(): Promise<MarkAsReadResponse> {
     return api.post('notifications/mark-all-read').json();
 }
+
+// FCM Token Management
+export type Platform = 'web' | 'android' | 'ios';
+
+export interface RegisterFcmTokenPayload {
+    token: string;
+    deviceId?: string;
+    platform?: Platform;
+}
+
+export interface FcmTokenResponse {
+    success: boolean;
+}
+
+export async function registerFcmToken(payload: RegisterFcmTokenPayload): Promise<FcmTokenResponse> {
+    return api.post('notifications/fcm-token', { json: payload }).json();
+}
+
+export async function removeFcmToken(token: string): Promise<FcmTokenResponse> {
+    return api.delete(`notifications/fcm-token/${encodeURIComponent(token)}`).json();
+}

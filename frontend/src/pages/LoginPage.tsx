@@ -1,6 +1,7 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { requestNotificationPermission } from '../lib/firebase';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -12,6 +13,10 @@ export default function LoginPage() {
     const location = useLocation();
 
     const from = (location.state as { from?: string })?.from || '/';
+
+    useEffect(() => {
+        requestNotificationPermission();
+    }, []);
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
