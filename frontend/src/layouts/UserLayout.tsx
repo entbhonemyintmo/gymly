@@ -3,12 +3,11 @@ import { useMemo } from 'react';
 import { Dumbbell } from 'lucide-react';
 import DesktopNavigation from '../components/desktop-navigation';
 import MobileNavigation from '../components/mobile-navigation';
-import { useAuth } from '../context/AuthContext';
+import { NotificationDropdown } from '../components/notification-dropdown';
 import { getNavItemByPath } from '../lib/navigation';
 
 export default function UserLayout() {
     const location = useLocation();
-    const { user } = useAuth();
 
     const currentPage = useMemo(() => {
         return getNavItemByPath(location.pathname);
@@ -34,21 +33,10 @@ export default function UserLayout() {
                             </div>
                             <span className="text-lg font-bold text-white tracking-tight">Gymly</span>
                         </div>
-                        {user && (
-                            <div className="flex items-center gap-3">
-                                <div className="hidden sm:block text-right">
-                                    <p className="text-sm font-medium text-white truncate max-w-[180px]">
-                                        {user.email}
-                                    </p>
-                                    <p className="text-xs text-green-100 capitalize">{user.role}</p>
-                                </div>
-                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm ring-2 ring-white/30">
-                                    <span className="text-sm font-semibold text-white">
-                                        {user.email.charAt(0).toUpperCase()}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
+
+                        <div className="flex items-center gap-3">
+                            <NotificationDropdown notificationsPageLink="/notifications" />
+                        </div>
                     </div>
 
                     {/* Page title and description */}
@@ -66,7 +54,6 @@ export default function UserLayout() {
                         </div>
                     </div>
 
-                    {/* Desktop Navigation */}
                     <DesktopNavigation />
                 </div>
             </header>
@@ -87,7 +74,6 @@ export default function UserLayout() {
                 </div>
             </main>
 
-            {/* Mobile Navigation */}
             <MobileNavigation />
         </div>
     );

@@ -8,6 +8,7 @@ import MyCheckInsPage from './pages/user/MyCheckInsPage';
 import MySubscriptionsPage from './pages/user/MySubscriptionsPage';
 import PackagesPage from './pages/user/PackagesPage';
 import ProfilePage from './pages/user/ProfilePage';
+import NotificationsPage from './pages/user/NotificationsPage';
 import AdminHomePage from './pages/admin/HomePage';
 import AdminCheckInsPage from './pages/admin/CheckInsPage';
 import AdminSubscriptionsPage from './pages/admin/SubscriptionsPage';
@@ -69,6 +70,7 @@ function AppRoutes() {
                 <Route path="/my-checkins" element={<MyCheckInsPage />} />
                 <Route path="/my-subscriptions" element={<MySubscriptionsPage />} />
                 <Route path="/packages" element={<PackagesPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
             </Route>
 
