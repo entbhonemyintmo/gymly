@@ -16,7 +16,9 @@ model User {
     createdAt    DateTime @default(now()) @map("created_at")
     updatedAt    DateTime @updatedAt @map("updated_at")
 
-    member Member? @relation(fields: [memberId], references: [id], onDelete: Cascade)
+    member        Member?        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+    fcmTokens     FcmToken[]
+    notifications Notification[]
 
     @@map("users")
 }
@@ -120,4 +122,42 @@ enum UserRole {
     admin
     staff
     member
+}
+
+model FcmToken {
+    id        Int      @id @default(autoincrement())
+    userId    Int      @map("user_id")
+    token     String   @unique
+    deviceId  String?  @map("device_id")
+    platform  String?
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@map("fcm_tokens")
+}
+
+model Notification {
+    id        Int              @id @default(autoincrement())
+    userId    Int              @map("user_id")
+    type      NotificationType
+    title     String
+    body      String
+    data      Json?
+    isRead    Boolean          @default(false) @map("is_read")
+    createdAt DateTime         @default(now()) @map("created_at")
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId, isRead])
+    @@index([userId, createdAt])
+    @@map("notifications")
+}
+
+enum NotificationType {
+    subscription_request
+    subscription_approved
+    subscription_rejected
 }
