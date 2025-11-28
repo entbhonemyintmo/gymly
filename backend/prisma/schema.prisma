@@ -1,8 +1,123 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+    provider = "prisma-client"
+    output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+    provider = "postgresql"
+}
+
+model User {
+    id           Int      @id @default(autoincrement())
+    email        String   @unique
+    passwordHash String   @map("password_hash")
+    role         UserRole @default(member)
+    memberId     Int?     @unique @map("member_id")
+    createdAt    DateTime @default(now()) @map("created_at")
+    updatedAt    DateTime @updatedAt @map("updated_at")
+
+    member Member? @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+    @@map("users")
+}
+
+model Member {
+    id          Int          @id @default(autoincrement())
+    name        String
+    phoneNumber String       @unique @map("phone_number")
+    status      MemberStatus @default(pending)
+    createdAt   DateTime     @default(now()) @map("created_at")
+    updatedAt   DateTime     @updatedAt @map("updated_at")
+
+    user          User?
+    orders        Order[]
+    subscriptions Subscription[]
+    checkIns      CheckIn[]
+
+    @@map("members")
+}
+
+model Package {
+    id           Int      @id @default(autoincrement())
+    name         String
+    description  String?  @map("description")
+    price        Int      @map("price")
+    durationDays Int      @map("duration_days")
+    isActive     Boolean  @default(true) @map("is_active")
+    createdAt    DateTime @default(now()) @map("created_at")
+    updatedBy    Int?     @map("updated_by")
+    updatedAt    DateTime @updatedAt @map("updated_at")
+
+    @@map("packages")
+}
+
+model Order {
+    id                  Int         @id @default(autoincrement())
+    memberId            Int         @map("member_id")
+    packageName         String      @map("package_name")
+    packagePrice        Int         @map("package_price")
+    packageDurationDays Int         @map("package_duration_days")
+    paidAmount          Int         @map("paid_amount")
+    receiptUrl          String?     @map("receipt_url")
+    orderStatus         OrderStatus @default(pending) @map("order_status")
+    reason              String?     @map("reason")
+    createdAt           DateTime    @default(now()) @map("created_at")
+    updatedAt           DateTime    @updatedAt @map("updated_at")
+
+    member        Member?        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+    subscriptions Subscription[]
+
+    @@map("orders")
+}
+
+model Subscription {
+    id        Int      @id @default(autoincrement())
+    memberId  Int      @map("member_id")
+    orderId   Int      @map("order_id")
+    startDate DateTime @default(now()) @map("start_date")
+    endDate   DateTime @map("end_date")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    order  Order?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    member Member? @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+    @@index([memberId, startDate, endDate])
+    @@map("subscriptions")
+}
+
+model CheckIn {
+    id        Int           @id @default(autoincrement())
+    memberId  Int           @map("member_id")
+    status    CheckInStatus
+    reason    String?
+    createdAt DateTime      @default(now()) @map("created_at")
+
+    member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+    @@index([memberId, createdAt])
+    @@map("check_ins")
+}
+
+enum CheckInStatus {
+    allowed
+    denied
+}
+
+enum MemberStatus {
+    approved
+    pending
+    rejected
+}
+
+enum OrderStatus {
+    approved
+    pending
+    rejected
+}
+
+enum UserRole {
+    admin
+    staff
+    member
 }
