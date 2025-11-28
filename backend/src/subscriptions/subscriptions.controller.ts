@@ -1,5 +1,5 @@
-import { Controller, Post, Get, Body, Query, ForbiddenException } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { Controller, Post, Get, Body, Query, Param, ParseIntPipe, ForbiddenException } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiParam } from '@nestjs/swagger';
 import { SubscriptionsService } from './subscriptions.service';
 import {
     SubscribeDto,
@@ -8,6 +8,9 @@ import {
     PaginatedMySubscriptionsDto,
     SubscriptionsQueryDto,
     PaginatedSubscriptionsDto,
+    DenySubscriptionDto,
+    ApproveSubscriptionResponseDto,
+    DenySubscriptionResponseDto,
 } from './dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -91,5 +94,44 @@ export class SubscriptionsController {
         }
 
         return this.subscriptionsService.subscribe(user.memberId, dto);
+    }
+
+    @Post(':id/approve')
+    @Roles(UserRole.admin)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Approve a pending subscription (admin only)' })
+    @ApiParam({ name: 'id', type: Number, description: 'Subscription ID' })
+    @ApiResponse({
+        status: 200,
+        description: 'Subscription approved successfully',
+        type: ApproveSubscriptionResponseDto,
+    })
+    @ApiResponse({ status: 400, description: 'Bad request - Subscription is not pending' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
+    @ApiResponse({ status: 404, description: 'Subscription not found' })
+    async approve(@Param('id', ParseIntPipe) id: number): Promise<ApproveSubscriptionResponseDto> {
+        return this.subscriptionsService.approve(id);
+    }
+
+    @Post(':id/deny')
+    @Roles(UserRole.admin)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Deny a pending subscription (admin only)' })
+    @ApiParam({ name: 'id', type: Number, description: 'Subscription ID' })
+    @ApiResponse({
+        status: 200,
+        description: 'Subscription denied',
+        type: DenySubscriptionResponseDto,
+    })
+    @ApiResponse({ status: 400, description: 'Bad request - Subscription is not pending' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
+    @ApiResponse({ status: 404, description: 'Subscription not found' })
+    async deny(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: DenySubscriptionDto,
+    ): Promise<DenySubscriptionResponseDto> {
+        return this.subscriptionsService.deny(id, dto);
     }
 }

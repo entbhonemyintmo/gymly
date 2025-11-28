@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
     SubscribeDto,
@@ -9,6 +9,9 @@ import {
     PaginatedMySubscriptionsDto,
     SubscriptionsQueryDto,
     PaginatedSubscriptionsDto,
+    DenySubscriptionDto,
+    ApproveSubscriptionResponseDto,
+    DenySubscriptionResponseDto,
 } from './dto';
 
 @Injectable()
@@ -138,6 +141,88 @@ export class SubscriptionsService {
             page,
             limit,
             totalPages: Math.ceil(total / limit),
+        };
+    }
+
+    async approve(subscriptionId: number): Promise<ApproveSubscriptionResponseDto> {
+        const subscription = await this.prisma.subscription.findUnique({
+            where: { id: subscriptionId },
+            include: { order: true },
+        });
+
+        if (!subscription) {
+            throw new NotFoundException('Subscription not found');
+        }
+
+        if (!subscription.order) {
+            throw new NotFoundException('Associated order not found');
+        }
+
+        if (subscription.order.orderStatus !== 'pending') {
+            throw new BadRequestException(
+                `Cannot approve subscription: order status is already '${subscription.order.orderStatus}'`,
+            );
+        }
+
+        const startDate = new Date();
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + subscription.order.packageDurationDays);
+
+        const [updatedOrder, updatedSubscription] = await this.prisma.$transaction([
+            this.prisma.order.update({
+                where: { id: subscription.orderId },
+                data: { orderStatus: 'approved', reason: null },
+            }),
+            this.prisma.subscription.update({
+                where: { id: subscriptionId },
+                data: { startDate, endDate },
+            }),
+        ]);
+
+        return {
+            subscriptionId: updatedSubscription.id,
+            orderId: updatedOrder.id,
+            orderStatus: updatedOrder.orderStatus,
+            startDate: updatedSubscription.startDate,
+            endDate: updatedSubscription.endDate,
+            message: 'Subscription approved successfully',
+        };
+    }
+
+    async deny(subscriptionId: number, dto: DenySubscriptionDto): Promise<DenySubscriptionResponseDto> {
+        const subscription = await this.prisma.subscription.findUnique({
+            where: { id: subscriptionId },
+            include: { order: true },
+        });
+
+        if (!subscription) {
+            throw new NotFoundException('Subscription not found');
+        }
+
+        if (!subscription.order) {
+            throw new NotFoundException('Associated order not found');
+        }
+
+        if (subscription.order.orderStatus !== 'pending') {
+            throw new BadRequestException(
+                `Cannot deny subscription: order status is already '${subscription.order.orderStatus}'`,
+            );
+        }
+
+        const updatedOrder = await this.prisma.order.update({
+            where: { id: subscription.orderId },
+            data: {
+                orderStatus: 'rejected',
+                reason: dto.reason || null,
+            },
+        });
+
+        return {
+            subscriptionId: subscription.id,
+            orderId: updatedOrder.id,
+            orderStatus: updatedOrder.orderStatus,
+            reason: updatedOrder.reason || undefined,
+            message: 'Subscription denied',
         };
     }
 }
