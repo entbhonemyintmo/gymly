@@ -1,12 +1,22 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export type UserRole = 'admin' | 'staff' | 'member';
+export type MemberStatus = 'approved' | 'pending' | 'rejected';
+
+export interface MemberInfo {
+    id: number;
+    name: string;
+    phoneNumber: string;
+    status: MemberStatus;
+    createdAt: string;
+}
 
 export interface AuthUser {
     userId: number;
     email: string;
     role: UserRole;
     memberId: number | null;
+    member?: MemberInfo;
 }
 
 export interface LoginResponse {
