@@ -20,10 +20,10 @@ export const formatDate = (dateString: string) => {
 };
 
 export function formatPrice(cents: number): string {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('my-MM', {
         style: 'currency',
-        currency: 'USD',
-    }).format(cents / 100);
+        currency: 'MMK',
+    }).format(cents);
 }
 
 export function formatDuration(days: number): string {

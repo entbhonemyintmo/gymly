@@ -1,10 +1,15 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2, Sparkles } from 'lucide-react';
-import { getPackages } from '../../api/packages';
+import { getPackages, type Package } from '../../api/packages';
 import { PackageCard } from '../../components/package-card';
+import { SubscribeModal } from '../../components/subscribe-modal';
 import { cn } from '../../lib/utils';
 
 export default function PackagesPage() {
+    const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const {
         data: packages = [],
         isLoading,
@@ -14,6 +19,17 @@ export default function PackagesPage() {
         queryKey: ['packages'],
         queryFn: getPackages,
     });
+
+    const handleSubscribe = (pkg: Package) => {
+        setSelectedPackage(pkg);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        // Clear selected package after animation
+        setTimeout(() => setSelectedPackage(null), 200);
+    };
 
     if (isLoading) {
         return (
@@ -83,13 +99,21 @@ export default function PackagesPage() {
                 )}
             >
                 {packages.map((pkg, index) => (
-                    <PackageCard key={pkg.id} pkg={pkg} isPopular={index === popularIndex} index={index} />
+                    <PackageCard
+                        key={pkg.id}
+                        pkg={pkg}
+                        isPopular={index === popularIndex}
+                        index={index}
+                        onSubscribe={handleSubscribe}
+                    />
                 ))}
             </div>
 
             <p className="text-center text-sm text-gray-400 mt-8">
-                All prices are in USD. Subscriptions are non-refundable.
+                All prices are in MMK. Subscriptions are non-refundable.
             </p>
+
+            <SubscribeModal pkg={selectedPackage} isOpen={isModalOpen} onClose={handleCloseModal} />
         </div>
     );
 }

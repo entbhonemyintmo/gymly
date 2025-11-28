@@ -6,9 +6,10 @@ export interface PackageCardProps {
     pkg: Package;
     isPopular?: boolean;
     index: number;
+    onSubscribe?: (pkg: Package) => void;
 }
 
-export function PackageCard({ pkg, isPopular, index }: PackageCardProps) {
+export function PackageCard({ pkg, isPopular, index, onSubscribe }: PackageCardProps) {
     const features = getPackageFeatures(pkg.durationDays);
 
     return (
@@ -86,6 +87,7 @@ export function PackageCard({ pkg, isPopular, index }: PackageCardProps) {
             </ul>
 
             <button
+                onClick={() => onSubscribe?.(pkg)}
                 className={cn(
                     'w-full flex items-center justify-center gap-2 rounded-xl py-3.5 px-4 font-semibold transition-all duration-200',
                     isPopular
