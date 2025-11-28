@@ -31,10 +31,6 @@ export class SubscriptionsService {
             throw new ForbiddenException('Package is not active');
         }
 
-        const startDate = new Date();
-        const endDate = new Date();
-        endDate.setDate(endDate.getDate() + pkg.durationDays);
-
         const result = await this.prisma.$transaction(async (tx) => {
             const order = await tx.order.create({
                 data: {
@@ -52,8 +48,6 @@ export class SubscriptionsService {
                 data: {
                     memberId,
                     orderId: order.id,
-                    startDate,
-                    endDate,
                 },
             });
 
@@ -183,8 +177,8 @@ export class SubscriptionsService {
             subscriptionId: updatedSubscription.id,
             orderId: updatedOrder.id,
             orderStatus: updatedOrder.orderStatus,
-            startDate: updatedSubscription.startDate,
-            endDate: updatedSubscription.endDate,
+            startDate: updatedSubscription.startDate!,
+            endDate: updatedSubscription.endDate!,
             message: 'Subscription approved successfully',
         };
     }

@@ -77,11 +77,19 @@ export class SubscriptionResponseDto {
     @ApiProperty({ example: 1, description: 'Order ID' })
     orderId: number;
 
-    @ApiProperty({ example: '2024-01-01T00:00:00.000Z', description: 'Subscription start date' })
-    startDate: Date;
+    @ApiProperty({
+        example: '2024-01-01T00:00:00.000Z',
+        description: 'Subscription start date (set when approved)',
+        nullable: true,
+    })
+    startDate: Date | null;
 
-    @ApiProperty({ example: '2024-01-31T00:00:00.000Z', description: 'Subscription end date' })
-    endDate: Date;
+    @ApiProperty({
+        example: '2024-01-31T00:00:00.000Z',
+        description: 'Subscription end date (set when approved)',
+        nullable: true,
+    })
+    endDate: Date | null;
 
     @ApiProperty({ example: '2024-01-01T00:00:00.000Z', description: 'Creation timestamp' })
     createdAt: Date;
@@ -105,11 +113,19 @@ export class SubscriptionWithMemberDto {
     @ApiProperty({ example: 1, description: 'Order ID' })
     orderId: number;
 
-    @ApiProperty({ example: '2024-01-01T00:00:00.000Z', description: 'Subscription start date' })
-    startDate: Date;
+    @ApiProperty({
+        example: '2024-01-01T00:00:00.000Z',
+        description: 'Subscription start date (set when approved)',
+        nullable: true,
+    })
+    startDate: Date | null;
 
-    @ApiProperty({ example: '2024-01-31T00:00:00.000Z', description: 'Subscription end date' })
-    endDate: Date;
+    @ApiProperty({
+        example: '2024-01-31T00:00:00.000Z',
+        description: 'Subscription end date (set when approved)',
+        nullable: true,
+    })
+    endDate: Date | null;
 
     @ApiProperty({ example: '2024-01-01T00:00:00.000Z', description: 'Creation timestamp' })
     createdAt: Date;
@@ -131,11 +147,19 @@ export class MySubscriptionDto {
     @ApiProperty({ example: 1, description: 'Order ID' })
     orderId: number;
 
-    @ApiProperty({ example: '2024-01-01T00:00:00.000Z', description: 'Subscription start date' })
-    startDate: Date;
+    @ApiProperty({
+        example: '2024-01-01T00:00:00.000Z',
+        description: 'Subscription start date (set when approved)',
+        nullable: true,
+    })
+    startDate: Date | null;
 
-    @ApiProperty({ example: '2024-01-31T00:00:00.000Z', description: 'Subscription end date' })
-    endDate: Date;
+    @ApiProperty({
+        example: '2024-01-31T00:00:00.000Z',
+        description: 'Subscription end date (set when approved)',
+        nullable: true,
+    })
+    endDate: Date | null;
 
     @ApiProperty({ example: '2024-01-01T00:00:00.000Z', description: 'Creation timestamp' })
     createdAt: Date;

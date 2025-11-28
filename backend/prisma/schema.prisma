@@ -71,13 +71,13 @@ model Order {
 }
 
 model Subscription {
-    id        Int      @id @default(autoincrement())
-    memberId  Int      @map("member_id")
-    orderId   Int      @map("order_id")
-    startDate DateTime @default(now()) @map("start_date")
-    endDate   DateTime @map("end_date")
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+    id        Int       @id @default(autoincrement())
+    memberId  Int       @map("member_id")
+    orderId   Int       @map("order_id")
+    startDate DateTime? @map("start_date")
+    endDate   DateTime? @map("end_date")
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
 
     order  Order?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
     member Member? @relation(fields: [memberId], references: [id], onDelete: Cascade)
