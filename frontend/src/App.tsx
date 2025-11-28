@@ -11,8 +11,8 @@ function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode;
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
-                <div className="w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full animate-spin" />
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
@@ -33,8 +33,8 @@ function AppRoutes() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
-                <div className="w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full animate-spin" />
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
@@ -52,7 +52,7 @@ function AppRoutes() {
             {/* User routes */}
             <Route
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['member']}>
                         <UserLayout />
                     </ProtectedRoute>
                 }

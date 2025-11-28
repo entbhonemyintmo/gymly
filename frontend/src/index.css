@@ -1,1 +1,103 @@
 @import 'tailwindcss';
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+@theme {
+    --font-sans: 'Outfit', system-ui, sans-serif;
+
+    --color-gymly-green-50: #f0fdf4;
+    --color-gymly-green-100: #dcfce7;
+    --color-gymly-green-500: #22c55e;
+    --color-gymly-green-600: #16a34a;
+    --color-gymly-emerald-500: #10b981;
+    --color-gymly-emerald-600: #059669;
+
+    --animate-fade-in: fade-in 0.3s ease-out;
+    --animate-slide-up: slide-up 0.4s ease-out;
+    --animate-scale-in: scale-in 0.2s ease-out;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: #fafafa;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+.page-enter {
+    animation: slide-up 0.3s ease-out;
+}
+
+@supports (padding: env(safe-area-inset-bottom)) {
+    .safe-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+:focus-visible {
+    outline: 2px solid #22c55e;
+    outline-offset: 2px;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
