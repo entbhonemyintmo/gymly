@@ -17,7 +17,7 @@ export default function UserLayout() {
     const Icon = currentPage.icon;
 
     return (
-        <div className="min-h-screen w-full flex flex-col bg-gray-50">
+        <div className="min-h-screen w-full flex flex-col bg-grey-100">
             {/* Header with background image */}
             <header
                 className="sticky top-0 left-0 right-0 z-20 px-4 pt-5 pb-10 md:px-6 md:pt-6 md:pb-12 bg-cover bg-center bg-no-repeat"

@@ -64,14 +64,8 @@ export default function MySubscriptionsPage() {
 
     return (
         <div className="mx-auto max-w-4xl p-6">
-            {/* Header */}
-            <div className="my-10">
-                <h1 className="text-2xl font-bold text-gray-900">My Subscriptions</h1>
-                <p className="mt-1 text-gray-500">Manage and track your gym membership subscriptions</p>
-            </div>
-
             {/* Filters */}
-            <div className="mb-6 flex flex-wrap items-center gap-3">
+            <div className="my-10 flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Filter className="h-4 w-4" />
                     <span>Filter:</span>
