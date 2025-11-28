@@ -3,6 +3,10 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import UserLayout from './layouts/UserLayout';
 import AdminLayout from './layouts/AdminLayout';
 import UserHomePage from './pages/user/HomePage';
+import MyCheckInsPage from './pages/user/MyCheckInsPage';
+import MySubscriptionsPage from './pages/user/MySubscriptionsPage';
+import PackagesPage from './pages/user/PackagesPage';
+import ProfilePage from './pages/user/ProfilePage';
 import AdminHomePage from './pages/admin/HomePage';
 import LoginPage from './pages/LoginPage';
 
@@ -58,6 +62,10 @@ function AppRoutes() {
                 }
             >
                 <Route path="/" element={<UserHomePage />} />
+                <Route path="/my-checkins" element={<MyCheckInsPage />} />
+                <Route path="/my-subscriptions" element={<MySubscriptionsPage />} />
+                <Route path="/packages" element={<PackagesPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
             </Route>
 
             {/* Admin routes */}

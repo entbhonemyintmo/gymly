@@ -1,4 +1,4 @@
-import { Home, Package, User, Dumbbell, type LucideIcon } from 'lucide-react';
+import { Home, Package, User, Dumbbell, CalendarCheck, CreditCard, type LucideIcon } from 'lucide-react';
 
 export interface NavItem {
     href: string;
@@ -15,9 +15,21 @@ export const navigationItems: NavItem[] = [
         icon: Home,
     },
     {
-        href: '/my-vouchers',
-        title: 'My Vouchers',
-        description: 'View and manage your active vouchers',
+        href: '/my-checkins',
+        title: 'My Check-ins',
+        description: 'View your check-in history',
+        icon: CalendarCheck,
+    },
+    {
+        href: '/my-subscriptions',
+        title: 'My Subscriptions',
+        description: 'View and manage your subscriptions',
+        icon: CreditCard,
+    },
+    {
+        href: '/packages',
+        title: 'Packages',
+        description: 'Browse and subscribe to packages',
         icon: Package,
     },
     {

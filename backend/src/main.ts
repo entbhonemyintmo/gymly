@@ -32,7 +32,7 @@ async function bootstrap() {
 
     await app.listen(process.env.PORT ?? 3000);
 
-    logger.log(`API is running on port ${process.env.PORT ?? 3000}`);
-    logger.log(`API documentation is available at http://localhost:${process.env.PORT ?? 3000}/docs`);
+    logger.verbose(`API is running on port ${process.env.PORT ?? 3000}`);
+    logger.verbose(`API documentation is available at http://localhost:${process.env.PORT ?? 3000}/docs`);
 }
 bootstrap();
