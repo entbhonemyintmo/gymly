@@ -1,0 +1,53 @@
+services:
+    postgres:
+        image: postgres:16-alpine
+        container_name: gymly-postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: gymly
+            POSTGRES_PASSWORD: gymly_dev_password
+            POSTGRES_DB: gymly
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        ports:
+            - "5434:5432"
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U gymly -d gymly"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile.dev
+        container_name: gymly-backend
+        restart: unless-stopped
+        depends_on:
+            postgres:
+                condition: service_healthy
+        env_file:
+            - ./backend/.env
+        volumes:
+            - ./backend:/app
+        ports:
+            - "8001:8001"
+
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile.dev
+        container_name: gymly-frontend
+        restart: unless-stopped
+        depends_on:
+            - backend
+        env_file:
+            - ./frontend/.env
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        ports:
+            - "5173:5173"
+
+volumes:
+    postgres_data:
