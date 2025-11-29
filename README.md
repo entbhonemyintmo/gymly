@@ -58,4 +58,4 @@ A gym membership management system with member check-ins, subscription managemen
 
     - Frontend: http://localhost:5173
     - Backend: http://localhost:8001
-    - Swagger: http://localhost:8001/api
+    - Swagger: http://localhost:8001/docs
